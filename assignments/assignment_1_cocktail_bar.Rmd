@@ -48,6 +48,13 @@ cocktail_raw <- cocktail_raw %>%
   mutate(ingredients = str_split(ingredients, "<br/>")) %>%
   unnest(ingredients) %>%
   mutate(ingredients = str_trim(ingredients))
+
+cocktail_raw <- cocktail_raw %>%
+    mutate(ingredient_clean = ingredient %>%
+           str_remove_all("\\(.*?\\)") %>%
+           str_remove(".*\\b(oz|dash|dashes|cup|tsp|tbsp|drops)\\b\\s*")
+         )
+# Not working fully, have to check in depth regex
       
 ```
 
