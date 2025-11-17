@@ -55,28 +55,26 @@ cocktail_raw <- cocktail_raw %>%
   )
 
 cocktail_raw <- cocktail_raw %>%
-  mutate(ingredients = str_split(ingredients, "<br/> | <br> | <b4/>")) %>%
-  unnest(ingredients) %>%
-  mutate(ingredients = str_trim(ingredients))
-
-# 2 lines are still not properly splitted, including a case with <br> and <b4/> as well, let`s transform and replace them with proper separator
-
-
-
-# Still not good, maybe 
-
-cocktail_raw <- cocktail_raw %>%
   mutate(ingredients = str_split(ingredients, "<br/>")) %>%
   unnest(ingredients) %>%
   mutate(ingredients = str_trim(ingredients))
 
-# Trying new approach to delete quantities
+# 2. Delete quantities and alcohol content
 
 # Step 1, delete everything before the text oz, including oz as well
 
 cocktail_raw <- cocktail_raw %>%
-    mutate(ingredient_clean = ingredient %>%
-             gsub()
+  mutate(ingredient_clean_1 = gsub(".*oz", "", ingredients)) %>%
+  mutate(ingredient_clean_1 = gsub("<br/", "", ingredient_clean_1))
+    
+# Now we get an error during the separator replacing process, as we have extra <br/ charachters, i should check it later
+
+# Step 2, delete every bracket, and its content
+
+cocktail_raw <- cocktail_raw %>%
+  mutate(ingredient_clean_1 = gsub("\\(.*?\\)", "", ingredient_clean_1))
+
+# Step 3, delete every dash/dashes and everything before them
 
       
 ```
