@@ -32,11 +32,10 @@ Note: There are several different ways to solve these tasks, feel free to come u
 Read the cocktail data set from: <https://github.com/nthun/cocktail-balance> You can also find the codebook there.
 
 ```{r}
-library(tidyverse)
 cocktail_raw <- readr::read_tsv(
   "https://raw.githubusercontent.com/nthun/cocktail-balance/master/cocktail_data.tsv")
 
-# Unfortunately. some characters cannot be read in the right format (ex. créme de cacao )
+# Note: Unfortunately some characters cannot be read in the right format (ex. créme de cacao )
 ```
 
 ## 2. Transform the data table and clean the ingredient variable!
@@ -44,15 +43,18 @@ cocktail_raw <- readr::read_tsv(
 The ingredients are currently in a single cell for each cocktail. It would be better to put them in separate rows. Also, the variable should be cleaned of all quantities (e.g. 1/2 oz, 2 dashes, etc.), and the indicator of alcohol content (e.g. 47.3% abv). You will need to use this cleaned table in later tasks.
 
 ```{r}
-# Make the separator consistent in the ingredients variable
+# Make the separator consistent in the ingredients variable (use everywhere <br/>, not <b4/> for example)
+# In some cases the separator may appear in the right format, but there is no space before it or after it.
 
 cocktail_raw <- cocktail_raw %>%
   mutate(
     ingredients = ingredients %>%
-      str_replace_all("<br/>|<br>|<b4/>", "<br/>") %>%
-      str_replace_all("(?<!\\s)<br/>", " <br/>") %>%
-      str_replace_all(">(?!\\s)", "<br/> ")
+      str_replace_all("<br\\s*/?>|<b4\\s*/?>", "<br/>") %>% # normalize the separator
+      str_replace_all("(?<!\\s)<br/>", " <br/>") %>% # adding space before the separator
+      str_replace_all("<br/>(?!\\s)", "<br/> ") # adding space after the separator
   )
+ 
+# Now we can split the ingredients by the separators
 
 cocktail_raw <- cocktail_raw %>%
   mutate(ingredients = str_split(ingredients, "<br/>")) %>%
@@ -64,19 +66,32 @@ cocktail_raw <- cocktail_raw %>%
 # Step 1, delete everything before the text oz, including oz as well
 
 cocktail_raw <- cocktail_raw %>%
-  mutate(ingredient_clean_1 = gsub(".*oz", "", ingredients)) %>%
-  mutate(ingredient_clean_1 = gsub("<br/", "", ingredient_clean_1))
-    
-# Now we get an error during the separator replacing process, as we have extra <br/ charachters, i should check it later
+  mutate(ingredient_clean_1 = gsub(".*oz", "", ingredients))
 
 # Step 2, delete every bracket, and its content
 
 cocktail_raw <- cocktail_raw %>%
   mutate(ingredient_clean_1 = gsub("\\(.*?\\)", "", ingredient_clean_1))
 
-# Step 3, delete every dash/dashes and everything before them
+# Step 3, delete every bsp, drop/drops and dash/dashes and everything before them
 
-      
+cocktail_raw <- cocktail_raw %>%
+  mutate(ingredient_clean_1 = gsub(".*bsp", "", ingredient_clean_1))
+
+cocktail_raw <- cocktail_raw %>%
+  mutate(ingredient_clean_1 = gsub(".*drops", "", ingredient_clean_1)) 
+
+cocktail_raw <- cocktail_raw %>%
+  mutate(ingredient_clean_1 = gsub(".*drop", "", ingredient_clean_1))
+
+cocktail_raw <- cocktail_raw %>%
+  mutate(ingredient_clean_1 = gsub(".*dashes", "", ingredient_clean_1))
+
+cocktail_raw <- cocktail_raw %>%
+  mutate(ingredient_clean_1 = gsub(".*dash", "", ingredient_clean_1))
+
+# When using this method its important to note that first the longer string should be deleted, ex first dashes, after dash, in other case "es" remains in the cell.
+
 ```
 
 ## 3. All ingredients in alphabetical order
@@ -84,7 +99,27 @@ cocktail_raw <- cocktail_raw %>%
 Before opening the bar, you need to find a reliable supplier that has all the ingredients. You need to send a list of all possible ingredients you will need. They don't need the quantities (i.e. how many of these are needed), just the names of the ingredients.
 
 ```{r}
+# Some people during the recipie-editing work may added the ingredients with capital letter, while others no. Also, in some cases may spaces remaind in the cells, so i make sure to get rid off them.
 
+# Check the list first
+list(unique(cocktail_raw$ingredient_clean_1))
+# We can see, that having a space before and after certain ingredients makes error, let`s resolve it now.
+
+cocktail_raw <- cocktail_raw %>%
+  mutate(ingredient_clean_1 = trimws(ingredient_clean_1))
+
+# Test the results
+
+list(unique(cocktail_raw$ingredient_clean_1))
+
+# We can see that it worked, as the number of ingredients decreased to 62 from 65
+# Delete the double spaces too
+
+cocktail_raw <- cocktail_raw %>%
+  mutate(ingredient_clean_1 = gsub("\\s+", " ", ingredient_clean_1))
+
+# Check again, in alphabetical order
+ingredients_list <- as.list(sort(unique(cocktail_raw$ingredient_clean_1)))
 ```
 
 ## 4. Number of unique ingredients
@@ -92,7 +127,8 @@ Before opening the bar, you need to find a reliable supplier that has all the in
 How many different ingredients you will need?
 
 ```{r}
-
+# We can check the length of the unique list to count the different ingredients
+length(unique(cocktail_raw$ingredient_clean_1))
 ```
 
 ## 5. What are the top 10 ingredients?
@@ -100,7 +136,7 @@ How many different ingredients you will need?
 What are the 10 most frequently used ingredients? If there are ties, you can list more than 10.
 
 ```{r}
-
+table(cocktail_raw$ingredient_clean_1, sort = TRUE)
 ```
 
 ## 6. Which cocktail(s) has/have the most ingredients?
