@@ -99,7 +99,7 @@ cocktail_raw <- cocktail_raw %>%
 Before opening the bar, you need to find a reliable supplier that has all the ingredients. You need to send a list of all possible ingredients you will need. They don't need the quantities (i.e. how many of these are needed), just the names of the ingredients.
 
 ```{r}
-# Some people during the recipie-editing work may added the ingredients with capital letter, while others no. Also, in some cases may spaces remaind in the cells, so i make sure to get rid off them.
+# Some people during the recipe-editing work may added the ingredients with capital letter, while others no. Also, in some cases may spaces remained in the cells, so i make sure to get rid off them.
 
 # Check the list first
 list(unique(cocktail_raw$ingredient_clean_1))
@@ -129,6 +129,23 @@ How many different ingredients you will need?
 ```{r}
 # We can check the length of the unique list to count the different ingredients
 length(unique(cocktail_raw$ingredient_clean_1))
+
+# The issue with this is whenever we can choose from 2 ingredients it makes one more unique value, but both other are present in the list as unique values
+# ex. number 58 is "clarified lime juice or champagne acid"
+
+# So again, we have to make another split by "or"
+# Add this to a new data frame, as we achieved the variable cleaning process
+
+cocktail_full <- cocktail_raw %>%
+  mutate(unique_ingredients = str_split(ingredient_clean_1, "\\s+or\\s+")) %>%
+  unnest(unique_ingredients) %>%
+  mutate(unique_ingredients = str_trim(unique_ingredients))
+
+# Checking the unique ingredients
+
+length(unique(cocktail_full$unique_ingredients))
+
+# We have 61 unique ingredients
 ```
 
 ## 5. What are the top 10 ingredients?
@@ -136,7 +153,11 @@ length(unique(cocktail_raw$ingredient_clean_1))
 What are the 10 most frequently used ingredients? If there are ties, you can list more than 10.
 
 ```{r}
-table(cocktail_raw$ingredient_clean_1, sort = TRUE)
+# In the case we can choose form 2 ingredients i consider them as both needed
+
+cocktail_full %>%
+  count(unique_ingredients, sort = TRUE) %>%
+  slice_max(n, n = 10)
 ```
 
 ## 6. Which cocktail(s) has/have the most ingredients?
@@ -144,21 +165,39 @@ table(cocktail_raw$ingredient_clean_1, sort = TRUE)
 Count the number of ingredients and filter all the cocktails that has that many.
 
 ```{r}
+# First we group by cocktail name, then summarize the unique ingredients and arrange them to check the order
 
+cocktail_full %>%
+  group_by(name) %>%
+  summarize(n_ingredients = n_distinct(unique_ingredients)) %>%
+  arrange(desc(n_ingredients))
+
+# We can see, that only one has 7, the rest has 6 or less
+# Count the maximum number of ingredients and filter for it
+
+cocktail_full %>%
+  group_by(name) %>%
+  summarize(n_ingredients = n_distinct(unique_ingredients)) %>%
+  filter(n_ingredients == max(n_ingredients))
 ```
 
 ## 7. How many ingredients appear in only one cocktail (rare ingredient)?
 
-Count all cocktails with only one ingredient, and
+Count all cocktails with only one ingredient
 
 ```{r}
-
+# Probably the instructions above are not complete, but let's check the list
+cocktail_full %>%
+  distinct(name, unique_ingredients) %>%
+  count(unique_ingredients, sort = TRUE) %>%
+  filter(n == 1) %>%
+  print(n = 30)
 ```
 
 ## 8. Which cocktail has an ingredient that is only used in one cocktail?
 
 ```{r}
-
+# We need to do the distinction better (abc list of ingredients, because that step blocks the process now)
 ```
 
 ## 9. What are the cocktails without rare ingredients?
