@@ -117,7 +117,7 @@ cocktail_full <- cocktail_full %>%
   mutate(unique_ingredients = gsub("\\s+", " ", unique_ingredients))
 
 # Check the ingredients in alphabetical order
-ingredients_list <- as.list(sort(unique(cocktail_full$unique_ingredients)))
+all_ingredients_list <- as.list(sort(unique(cocktail_full$unique_ingredients)))
 
 ```
 
@@ -204,7 +204,13 @@ length(rare_cocktail_list)
 ## 9. What are the cocktails without rare ingredients?
 
 ```{r}
+# We can subtract from the total cocktail list those with rare ingredients
 
+full_coctail_list <- as.list(unique(cocktail_full$name))
+
+rare_ingredient_free_cocktails <- setdiff(full_coctail_list, rare_cocktail_list)
+
+# The cocktails which not containing rare ingredients are the following <rare_ingredient_free_cocktails>
 ```
 
 ## 10. Create a cheat sheet for the bartender!
@@ -220,7 +226,19 @@ tribble(~name, ~Lime, ~`White rum`, ~`Cane sugar`, ~`Coca-cola`, ~Mint, ~Soda,
 ```
 
 ```{r}
+# We have a cocktail with mentioning the same ingredient twice, and this made the pivot wider not possible before.
+# First we are taking into account every ingredient once/cocktail
+cocktail_full <- cocktail_full %>%
+  distinct(name, unique_ingredients)
 
+cheat_sheet <- cocktail_full %>%
+  mutate(value = "X") %>%                     
+  pivot_wider(
+    names_from  = unique_ingredients,         
+    values_from = value,
+    values_fill = list(value = "")
+  ) %>%
+  relocate(name, sort(names(.)))
 ```
 
 Congrats, the bar is now officially open!
