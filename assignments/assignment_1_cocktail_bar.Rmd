@@ -92,47 +92,8 @@ cocktail_raw <- cocktail_raw %>%
 
 # When using this method its important to note that first the longer string should be deleted, ex first dashes, after dash, in other case "es" remains in the cell.
 
-```
-
-## 3. All ingredients in alphabetical order
-
-Before opening the bar, you need to find a reliable supplier that has all the ingredients. You need to send a list of all possible ingredients you will need. They don't need the quantities (i.e. how many of these are needed), just the names of the ingredients.
-
-```{r}
-# Some people during the recipe-editing work may added the ingredients with capital letter, while others no. Also, in some cases may spaces remained in the cells, so i make sure to get rid off them.
-
-# Check the list first
-list(unique(cocktail_raw$ingredient_clean_1))
-# We can see, that having a space before and after certain ingredients makes error, let`s resolve it now.
-
-cocktail_raw <- cocktail_raw %>%
-  mutate(ingredient_clean_1 = trimws(ingredient_clean_1))
-
-# Test the results
-
-list(unique(cocktail_raw$ingredient_clean_1))
-
-# We can see that it worked, as the number of ingredients decreased to 62 from 65
-# Delete the double spaces too
-
-cocktail_raw <- cocktail_raw %>%
-  mutate(ingredient_clean_1 = gsub("\\s+", " ", ingredient_clean_1))
-
-# Check again, in alphabetical order
-ingredients_list <- as.list(sort(unique(cocktail_raw$ingredient_clean_1)))
-```
-
-## 4. Number of unique ingredients
-
-How many different ingredients you will need?
-
-```{r}
-# We can check the length of the unique list to count the different ingredients
-length(unique(cocktail_raw$ingredient_clean_1))
-
 # The issue with this is whenever we can choose from 2 ingredients it makes one more unique value, but both other are present in the list as unique values
 # ex. number 58 is "clarified lime juice or champagne acid"
-
 # So again, we have to make another split by "or"
 # Add this to a new data frame, as we achieved the variable cleaning process
 
@@ -140,12 +101,33 @@ cocktail_full <- cocktail_raw %>%
   mutate(unique_ingredients = str_split(ingredient_clean_1, "\\s+or\\s+")) %>%
   unnest(unique_ingredients) %>%
   mutate(unique_ingredients = str_trim(unique_ingredients))
+```
 
-# Checking the unique ingredients
+## 3. All ingredients in alphabetical order
 
-length(unique(cocktail_full$unique_ingredients))
+Before opening the bar, you need to find a reliable supplier that has all the ingredients. You need to send a list of all possible ingredients you will need. They don't need the quantities (i.e. how many of these are needed), just the names of the ingredients.
 
-# We have 61 unique ingredients
+```{r}
+# In some cases may spaces remained in the cells, so i make sure to get rid off them.
+cocktail_full <- cocktail_full %>%
+  mutate(unique_ingredients = trimws(unique_ingredients))
+
+# Delete the double spaces too
+cocktail_full <- cocktail_full %>%
+  mutate(unique_ingredients = gsub("\\s+", " ", unique_ingredients))
+
+# Check the ingredients in alphabetical order
+ingredients_list <- as.list(sort(unique(cocktail_full$unique_ingredients)))
+
+```
+
+## 4. Number of unique ingredients
+
+How many different ingredients you will need?
+
+```{r}
+length(ingredients_list)
+# The <coctail_full> dataset has <length(ingredients_list)> different type of cocktail ingredients
 ```
 
 ## 5. What are the top 10 ingredients?
@@ -153,7 +135,7 @@ length(unique(cocktail_full$unique_ingredients))
 What are the 10 most frequently used ingredients? If there are ties, you can list more than 10.
 
 ```{r}
-# In the case we can choose form 2 ingredients i consider them as both needed
+# In case we can choose form 2 ingredients, i consider them as both needed
 
 cocktail_full %>%
   count(unique_ingredients, sort = TRUE) %>%
@@ -187,23 +169,42 @@ Count all cocktails with only one ingredient
 
 ```{r}
 # Probably the instructions above are not complete, but let's check the list
-cocktail_full %>%
+
+rare_ingredients <- cocktail_full %>%
   distinct(name, unique_ingredients) %>%
   count(unique_ingredients, sort = TRUE) %>%
   filter(n == 1) %>%
   print(n = 30)
+
+rare_list <- as.list(rare_ingredients[[1]])
+length(rare_list)
+
+# In the <cocktail full> dataset we have <length(rare_list)> unique ingredients used in only one cocktail
 ```
 
 ## 8. Which cocktail has an ingredient that is only used in one cocktail?
 
 ```{r}
-# We need to do the distinction better (abc list of ingredients, because that step blocks the process now)
+# First we keep every rare ingredient, and attach to them the cocktails
+
+rare_cocktail <- cocktail_full %>%
+  semi_join(rare_ingredients, by = "unique_ingredients") %>%
+  select(name, unique_ingredients)
+
+# Select the unique cocktails using cocktail specific ingredients 
+# (as previously we could see one cocktail could appear multiple times,
+# as some cocktails contained multiple rare ingredients
+
+rare_cocktail_list <- as.list(unique(rare_cocktail$name))
+length(rare_cocktail_list)
+
+# There is <length(rare_cocktail_list)> different cocktails having rare ingredient
 ```
 
 ## 9. What are the cocktails without rare ingredients?
 
 ```{r}
-  
+
 ```
 
 ## 10. Create a cheat sheet for the bartender!
