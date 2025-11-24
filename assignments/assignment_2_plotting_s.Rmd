@@ -134,5 +134,46 @@ Notes:
 -   The point size is 2, . The theme is set to light.
 
 ```{r}
+commute_mode <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2019/2019-11-05/commute.csv")
+
+# grouping the data and counting the state and mode combinations
+commute_plot_data <- commute_mode %>%
+  group_by(state, mode, state_region, state_abb) %>%
+  summarise(total = sum(n, na.rm = TRUE)) %>%
+  ungroup()
 
 ```
+## Change from long to wide format
+
+```{r}
+commute_plot_data <- commute_plot_data %>%
+  pivot_wider(names_from = mode, values_from = total) %>%
+  filter(!is.na(Walk), !is.na(Bike), !is.na(state_abb))
+
+# The original plot contained NA-s as well, but they were hard to notice and i decided not to include them
+```
+
+## Plotting
+```{r}
+walkbike_plot <- ggplot(commute_plot_data, aes(x = Walk, y = Bike, color = state_region)) +
+  geom_point(size = 2) +
+  geom_text(aes(label = state_abb), color = "black", size = 3.5, fontface = "bold") +
+  scale_x_log10(labels = scales::comma_format()) +
+  scale_y_log10(labels = scales::comma_format()) +
+  labs(
+    x = "Number of people walking to work (log N)",
+    y = "Number of people biking to work (log N)",
+    color = "State region",
+    title = "Number of people walking vs. biking to work in each USA state"
+  ) +
+  theme_light() +
+    theme(text = element_text(size = 14)
+  )
+```
+## Saving to check
+
+```{r}
+# ggsave("third_plot_replicate.png", walkbike_plot)
+# checked, it looks similar, just the starting point of the y scale is higher now, as we eliminated the NA-s
+```
+
