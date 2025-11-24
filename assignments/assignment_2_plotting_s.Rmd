@@ -20,6 +20,8 @@ You will have to create 3 plots based on the datasets and instructions detailed 
 knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(tidytuesdayR)
+library(viridis)
+library(forcats)
 ```
 
 ## Task 1: Climbing expeditions
@@ -31,7 +33,55 @@ The 2020-09-22 TidyTueday datasets are about climbing expeditions. From the thre
 -   The bar colors use the viridis palette and light theme.
 
 ```{r}
+expeditions <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-09-22/expeditions.csv')
 
+# Variables used: count/summarize the number of expeditions by the peak name and categorize by season during the plotting
+
+# creating a data frame for the first plot
+# Grouping the first 15 peak, dropping the others by filtering the data frame we use for the plot
+
+first_plot <- expeditions %>%
+  mutate(
+    peak_name = fct_lump(peak_name, n = 15, other_level = "Other")
+  )
+
+first_plot <- first_plot %>%
+  filter(peak_name != "Other")
+# Counting the number of 
+first_plot <- first_plot %>%
+  count(peak_name, season, name = "n") %>%
+  group_by(peak_name) %>%
+  mutate(total = sum(n)) %>%
+  ungroup() %>%
+  mutate(peak_name = fct_reorder(peak_name, total))
+
+```
+
+## Plotting the 1st graph
+```{r}
+firstplot <- ggplot(first_plot, aes(x = peak_name, y = n, fill = season)) +
+  geom_col(width = 0.8) +
+  coord_flip() +
+  scale_fill_viridis_d() +
+  labs(
+    x = NULL,
+    y = "Number of Expeditions",
+    title = "The 15 most popular peaks stacked by season of expedition",
+    fill = "season"
+  ) +
+  theme_light() + 
+  theme(legend.position = "bottom",
+        text = element_text(size = 16),
+        plot.title = element_text(size = 17))
+```
+
+## Saving the plot to check for differences
+```{r}
+
+ggsave("first_replicated_plot.png", firstplot, width = 16, height = 9, dpi = 400)
+getwd()
+
+# Plot checked, looks similar
 ```
 
 ## Task 2: PhDs awarded
