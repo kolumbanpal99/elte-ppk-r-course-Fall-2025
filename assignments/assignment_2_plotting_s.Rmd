@@ -77,10 +77,8 @@ firstplot <- ggplot(first_plot, aes(x = peak_name, y = n, fill = season)) +
 
 ## Saving the plot to check for differences
 ```{r}
-
-ggsave("first_replicated_plot.png", firstplot, width = 16, height = 9, dpi = 400)
-getwd()
-
+# ggsave("first_replicated_plot.png", firstplot, width = 16, height = 9, dpi = 400)
+# getwd()
 # Plot checked, looks similar
 ```
 
@@ -95,7 +93,34 @@ Notes:
 -   The line size is 1.2, the colors are from the brewer "Dark2" palette. The theme is set to minimal.
 
 ```{r}
+phd_field <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2019/2019-02-19/phd_by_field.csv")
 
+# aggregate the data to count all board field
+# x axis: years
+# using line plot
+
+phd_plot_data <- phd_field %>%
+  group_by(year, broad_field) %>%
+  summarise(total_phds = sum(n_phds, na.rm = TRUE)) %>%
+  ungroup()
+
+phd_plot <- ggplot(phd_plot_data, aes(x = year, y = total_phds, color = broad_field)) +
+  geom_line(size = 1.2) +
+  scale_color_brewer(palette = "Dark2") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  labs(
+    x = NULL,
+    y = NULL,
+    color = "Broad field",
+    title = "Number of awarded Ph.D.-s in the US by year"
+  ) +
+  theme_minimal()
+```
+
+## Plot checking via printing
+```{r}
+# ggsave("second_replicated_plot.png", phd_plot)
 ```
 
 ## Task 3: Commute in the US
