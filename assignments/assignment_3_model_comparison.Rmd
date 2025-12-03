@@ -62,7 +62,8 @@ Read the dataset used in this assignment. Pay attention to the extension of the 
 getwd()
 setwd("C:/Users/kolum/Documents/elte-ppk-r-course-Fall-2025/data")
 raw_data <- readxl::read_excel("assignment_3_dataset.xlsx")
-
+library(tidyverse)
+library(ggcorrplot)
 ```
 
 ## Data and model diagnostics
@@ -97,8 +98,6 @@ table(raw_data$cortisol_saliva)
 table(raw_data$age)
 table(raw_data$sex) # recode the woman to female 
 
-# later on check: Cook's distance
-
 ```
 
 #### Correct coding errors
@@ -121,8 +120,6 @@ In order to test the more complex model for outliers and to test the assumptions
 
 ```{r}
 # simpler model: age, sex : predictors, pain: outcome
-lm()
-
 # complex model: 
 # **predictors: age, sex, STAI, pain catastrophizing, mindfulness, and cortisol measures**
 
@@ -145,8 +142,8 @@ Check for outlier values in the model.
 plot(model_simple, which = 4)
 plot(model_complex, which = 4)
 
-# Filter out the cases with 0,04 CD
-model_simple <- raw_data %>%
+# Filter out the cases with 0,04 CD and save it as model_simple_1
+model_simple_1 <- raw_data %>%
   mutate(cooks = cooks.distance(model_simple)) %>%
   filter(cooks < 4 / n()) %>%
   lm(pain ~ age + sex, data = .)
@@ -159,11 +156,11 @@ plot(model_simple, which = 4)
 model_complex <- raw_data %>%
   mutate(cooks = cooks.distance(model_complex)) %>%
   filter(cooks < 4 / n()) %>%
-  lm(pain ~ age + sex, data = .)
+  lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness + cortisol_serum +  cortisol_saliva, data = .)
 
 summary(model_complex)
 
-
+# Need to find a different method for having cooks distance results saved
 ```
 
 #### Checking assumptions
@@ -171,6 +168,20 @@ summary(model_complex)
 Check the normality assumption.
 
 ```{r}
+# Model residuals
+
+mod_simp_resid <- model_simple$residuals
+hist(mod_simp_resid)
+
+# We can see from the histogram that the residuals of our simple model are normally distributed
+
+qqnorm(mod_simp_resid)
+qqline(mod_simp_resid)
+
+# We can use Kolmog and Shapiro as well to test normal distribution
+
+shapiro.test(mod_simp_resid)
+# ks.test(mod_simp_resid, "pnorm") # there are repeated values, check for solution
 
 ```
 
@@ -233,7 +244,16 @@ Homoscedasticty assumption (homogeneity of variance)
 Multicollinearity assumption
 
 ```{r}
+# Testing for multicollinearity assumption
+# We first need a dataset without the outcome
 
+m_data <- subset(raw_data, select = - pain)
+
+corr_matrix = round(cor(m_data), 2)
+
+# check for the cause of the error
+
+str(m_data)
 ```
 
 ## Model comparison
