@@ -98,6 +98,17 @@ table(raw_data$cortisol_saliva)
 table(raw_data$age)
 table(raw_data$sex) # recode the woman to female 
 
+# Plotting the variables distribution
+
+hist(raw_data$pain)
+hist(raw_data$STAI_trait)
+hist(raw_data$pain_cat)
+hist(raw_data$mindfulness)
+hist(raw_data$cortisol_serum)
+hist(raw_data$cortisol_saliva)
+hist(raw_data$age)
+
+boxplot(raw_data$cortisol_saliva)
 ```
 
 #### Correct coding errors
@@ -168,33 +179,49 @@ summary(model_complex)
 Check the normality assumption.
 
 ```{r}
+# 1. Test of the simple model
 # Model residuals
-
 mod_simp_resid <- model_simple$residuals
 hist(mod_simp_resid)
 
 # We can see from the histogram that the residuals of our simple model are normally distributed
-
 qqnorm(mod_simp_resid)
 qqline(mod_simp_resid)
 
-# We can use Kolmog and Shapiro as well to test normal distribution
-
+# We can use Shapiro-Wilk test to check if there is a significant difference from normal distribution
 shapiro.test(mod_simp_resid)
-# ks.test(mod_simp_resid, "pnorm") # there are repeated values, check for solution
 
+# Result:
+# There is no significant difference from normal distribution
+
+# 2. Test of the complex model
+
+# Model residuals
+mod_comp_resid <- model_complex$residuals
+hist(mod_comp_resid)
+
+# We can see from the histogram that the residuals of our simple model are normally distributed
+qqnorm(mod_comp_resid)
+qqline(mod_comp_resid)
+
+# We can use Shapiro-Wilk test to check if there is a significant difference from normal distribution
+shapiro.test(mod_comp_resid)
+
+# Result
+# There is no significant difference from normal distribution
 ```
 
 Check the linearity assumption.
 
 ```{r}
-
+plot(model_simple)
+plot(model_complex)
 ```
 
 Check the homoscedasticty assumption (homogeneity of variance).
 
 ```{r}
-
+plot(raw_data$pain)
 ```
 
 Check the multicollinearity assumption.
@@ -204,7 +231,21 @@ Check the multicollinearity assumption.
 Some info about VIF: <https://statisticalhorizons.com/multicollinearity> <http://blog.minitab.com/blog/understanding-statistics/handling-multicollinearity-in-regression-analysis>
 
 ```{r}
+car::vif(model_simple)
+car::vif(model_complex)
 
+# We can see that the cortisol_serum and saliva has VIF values above 
+# 6 and 7 so we can drop the saliva one as i explains even less variance compared to serum
+
+# alternative models with cortisol_saliva and serum included/excluded
+
+model_complex_2 <- lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness +  cortisol_saliva, data = raw_data)
+summary(model_complex_2)
+
+model_complex_3 <- lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness +  cortisol_serum, data = raw_data)
+summary(model_complex_3)
+
+# Based on the results is better to keep the cortisol serum, as it shows to explain greater variance and its theoretically suggested too, being the more precise measurement from this 2
 ```
 
 ### Making decision based on model diagnostics
@@ -212,13 +253,24 @@ Some info about VIF: <https://statisticalhorizons.com/multicollinearity> <http:/
 If based on the assumption tests you decide to drop a predictor variable you should do that here. Create your updated model.
 
 ```{r}
-
+model_updated <- lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness +  cortisol_serum, data = raw_data)
+summary(model_updated)
 ```
 
 #### Checking outliers of the updated model
 
 ```{r}
+plot(model_updated, which = 4)
+raw_2_data <- raw_data %>%
+  mutate(cd = cooks.distance(model_updated))
 
+# we can exclude based on Cook`s distance the cases 80, 105 and 109
+
+cleaned_data <- raw_2_data %>%
+  filter(cd <= 0.04)
+
+model_updated <- lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness +  cortisol_serum, data = cleaned_data)
+summary(model_updated)
 ```
 
 #### Checking assumptions of the updated model
@@ -226,19 +278,31 @@ If based on the assumption tests you decide to drop a predictor variable you sho
 Normality assumption
 
 ```{r}
+mod_updated_resid <- model_updated$residuals
+hist(mod_comp_resid)
 
+# We can see from the histogram that the residuals of our simple model are normally distributed
+qqnorm(mod_updated_resid)
+qqline(mod_updated_resid)
+
+# We can use Shapiro-Wilk test to check if there is a significant difference from normal distribution
+shapiro.test(mod_updated_resid)
+
+
+# Result:
+# There is no significant difference from normal distribution
 ```
 
 Linearity assumption
 
 ```{r}
-
+plot(model_updated)
 ```
 
 Homoscedasticty assumption (homogeneity of variance)
 
 ```{r}
-
+plot(cleaned_data$pain)
 ```
 
 Multicollinearity assumption
@@ -247,12 +311,18 @@ Multicollinearity assumption
 # Testing for multicollinearity assumption
 # We first need a dataset without the outcome
 
-m_data <- subset(raw_data, select = - pain)
+mcoll_data <- subset(cleaned_data, select = - pain)
 
-corr_matrix = round(cor(m_data), 2)
+# recode the sex values
+mcoll_data$sex_num <- ifelse(mcoll_data$sex == "male", 0, 1)
+
+mcoll_data <- mcoll_data %>%
+  select(- sex, - cd, - ID)
+
+corr_matrix = round(cor(mcoll_data), 2)
 
 # check for the cause of the error
-
+# It was the ID variable being present in the dataset
 str(m_data)
 ```
 
@@ -261,17 +331,39 @@ str(m_data)
 Create the simple model and get the results of the model that needs to be reported based on the What to report section.
 
 ```{r}
+model_s_updated <- lm(pain ~ age + sex, data = cleaned_data)
+summary(model_s_updated)
 
 ```
 
 Create the more complex model based on the results of the model diagnostics. Also, get the results that needs to be reported based on the What to report section.
 
 ```{r}
-
+model_updated <- lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness +  cortisol_serum, data = cleaned_data)
+summary(model_updated)
 ```
 
 Compare the two models.
 
 ```{r}
+anova(model_s_updated, model_updated)
+
+# We can test a middle block too, when we are not including any saliva measures, only demographic + psychological measures
+# Lets call it model_mid_updated
+
+model_mid_updated <- lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness, data = cleaned_data)
+summary(model_mid_updated)
+
+# there is a significant difference between this 2 models
+# Compared to the simple model which includes age and sex the more complex model explains more variance (36-33%) compared to (8,4-7,2%)
 
 ```
+
+# Summary report
+```{r}
+# In this study we compared different models for explaining the pain experience of patients.
+# During the test process we dropped one saliva measure because of multicollinearity (cortisol serum and saliva has r = 0.91)
+
+
+```
+
