@@ -58,7 +58,11 @@ Compare the model coefficients and the confidence intervals observed in this ass
 Read the datasets used in this assignment. Pay attention to the extensions of the datafiles.
 
 ```{r}
+getwd()
+setwd("C:/Users/kolum/Documents/elte-ppk-r-course-Fall-2025/data")
 
+a_data <- haven::read_sav("assignment_4_dataset_A.sav")
+b_data <- haven::read_sav("assignment_4_dataset_B.sav")
 ```
 
 ## Exploratory data analysis
