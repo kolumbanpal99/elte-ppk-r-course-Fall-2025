@@ -169,5 +169,47 @@ confint(model_mixed)
 ## Calculating marginal R2 and conditional R2
 
 ```{r}
+# install.packages("MuMIn")
+
+r2_values <- MuMIn::r.squaredGLMM(model_mixed)
+view(r2_values)
+
+# Results:
+
+# R2m       R2c
+# 0.3167528 0.4356176
+```
+
+## How the model looks like
+
+```{r}
+# predicted pain = B0 + B1 * age + B2 * sex + ... + B6 * cortisol_serum
+
+# As we saw the model intercepts earlier we can just save it to a new variable
+
+coefs <- fixef(model_mixed)
+coefs
+table(b_data$sex)
+
+# Create the dummy variable expected by the model (this was done by R in the case of previous model)
+b_data$sexmale <- ifelse(b_data$sex == "male", 1, 0)
+
+# Now we use theese coefficients to calculate pain points in the other dataframe called b_data
+
+pred_B <- coefs["(Intercept)"] +
+          coefs["age"] * b_data$age +
+          coefs["sexmale"] * b_data$sexmale +
+          coefs["STAI_trait"] * b_data$STAI_trait +
+          coefs["pain_cat"] * b_data$pain_cat +
+          coefs["mindfulness"] * b_data$mindfulness +
+          coefs["cortisol_serum"] * b_data$cortisol_serum
 
 ```
+
+
+
+
+
+
+
+
