@@ -129,94 +129,28 @@ confint(model_mixed)
 ## Compare the 2 models
 
 ```{r}
-# Previous model performance:
-  
-# Call:
-# lm(formula = pain ~ age + sex + STAI_trait + pain_cat + mindfulness + 
-#    cortisol_serum, data = cleaned_data)
-#
-# Residuals:
-#     Min       1Q   Median       3Q      Max 
-# -2.65134 -0.82613 -0.03108  0.74584  2.60365 
-#
+# Model simple:
 # Coefficients:
-#               Estimate Std. Error t value Pr(>|t|)    
-# (Intercept)     1.97396    1.62538   1.214 0.226518    
-# age            -0.04367    0.02262  -1.931 0.055403 .  
-# sexmale         0.37733    0.20594   1.832 0.068944 .  
-# STAI_trait      0.01414    0.02689   0.526 0.599906    
-# pain_cat        0.07257    0.02751   2.638 0.009241 ** 
-# mindfulness    -0.16106    0.12304  -1.309 0.192549    
-# cortisol_serum  0.47839    0.12566   3.807 0.000206 ***
-# ---
-# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-#
-# Residual standard error: 1.183 on 147 degrees of freedom
-# Multiple R-squared:  0.3642,	Adjusted R-squared:  0.3383 
-# F-statistic: 14.03 on 6 and 147 DF,  p-value: 1.367e-12
+#		                Estimate 		     CI-s (2,5 -  97,5)
+# (Intercept)     1.97396    	-1.23816373     5.186081156
+# age            -0.04367     -0.08837037     0.001022283
+# sexmale         0.37733    	-0.02965998     0.784318685
+# STAI_trait      0.01414    	-0.03901003     0.067284114
+# pain_cat        0.07257    	0.01820124      0.126930228
+# mindfulness    -0.16106    	-0.40421007     0.082083080
+# cortisol_serum  0.47839   	0.23006300      0.726720774
 
-
-```
-
-## New model results
-
-```{r}
-# The new model
-
-# Linear mixed model fit by REML ['lmerMod']
-# Formula: pain ~ age + sex + STAI_trait + pain_cat + mindfulness + cortisol_serum +      (1 | hospital)
-#   Data: a_data
-#
-# REML criterion at convergence: 682.6
-#
-# Scaled residuals: 
-#     Min       1Q   Median       3Q      Max 
-# -3.10080 -0.67358  0.05678  0.66353  2.78802 
-#
-# Random effects:
-# Groups   Name        Variance Std.Dev.
-# hospital (Intercept) 0.3131   0.5596  
-# Residual             1.4866   1.2193  
-# Number of obs: 200, groups:  hospital, 10
-#
+# Model complex with hospitals
 # Fixed effects:
-#                Estimate Std. Error t value
-# (Intercept)     3.502306   1.380454   2.537
-# age            -0.054400   0.019818  -2.745
-# sexmale         0.297545   0.190460   1.562
-# STAI_trait      0.001437   0.023851   0.060
-# pain_cat        0.036885   0.028633   1.288
-# mindfulness    -0.262441   0.100647  -2.608
-# cortisol_serum  0.610010   0.114260   5.339
+#                    Estimate 			CI-s (2,5-97,5)
+# (Intercept)     3.502306   	0.84153742      6.20305781	
+# age            -0.054400   	-0.09363796     -0.01620546
+# sexmale         0.297545   	-0.06956659     0.67142442
+# STAI_trait      0.001437   	-0.04472838     0.04774798
+# pain_cat        0.036885   	-0.01885807     0.09219691
+# mindfulness    -0.262441   	-0.45779593     -0.06764763
+# cortisol_serum  0.610010   	0.38893037      0.83190118
 
-# Correlation of Fixed Effects:
-#            (Intr) age    sexmal STAI_t pan_ct mndfln
-# age         -0.626                                   
-# sexmale      0.144 -0.206                            
-# STAI_trait  -0.104 -0.321  0.214                     
-# pain_cat    -0.552  0.269 -0.358 -0.400              
-# mindfulness -0.569  0.056 -0.076  0.032  0.483       
-# cortisl_srm -0.224  0.261  0.001 -0.416 -0.078  0.003
-
-
-## CI-s
-
-#                      2.5 %      97.5 %
-# .sig01          0.29275254  0.94853399
-# .sigma          1.08880037  1.33177484
-# (Intercept)     0.84153742  6.20305781
-# age            -0.09363796 -0.01620546
-# sexmale        -0.06956659  0.67142442
-# STAI_trait     -0.04472838  0.04774798
-# pain_cat       -0.01885807  0.09219691
-# mindfulness    -0.45779593 -0.06764763
-# cortisol_serum  0.38893037  0.83190118
-
-
-```
-
-## Comparimg the models
-```{r}
 
 ```
 
