@@ -151,6 +151,23 @@ confint(model_mixed)
 # mindfulness    -0.262441   	-0.45779593     -0.06764763
 # cortisol_serum  0.610010   	0.38893037      0.83190118
 
+# We can see that accounting for hospitals increased and make significant the effect of
 
+# AGE
+# MINDFULNESS
+# CORTISOL_SERUM (already significant, but its increased)
+
+# Had no effect on 
+
+# SEX
+# TRAI_TRAIT
+
+# CUT DOWN THE EFFECT OF:
+# PAIN_CAT (not significant anymore, but it was in the other model)
 ```
 
+## Calculating marginal R2 and conditional R2
+
+```{r}
+
+```
