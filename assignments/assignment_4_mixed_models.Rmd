@@ -13,19 +13,19 @@ library(tidyverse)
 
 # Introduction
 
-This assignment is related to the previous lab assignment concerning perioperative pain and its psychological and hormonal predictors. Just like previously, you will set up linear model to predict postoperative pain after wisdom tooth surgery, but this time you will have to also take into account the fact that there is clustering in the data. 
+This assignment is related to the previous lab assignment concerning perioperative pain and its psychological and hormonal predictors. Just like previously, you will set up linear model to predict postoperative pain after wisdom tooth surgery, but this time you will have to also take into account the fact that there is clustering in the data.
 
 Your research paper on the effect of the psychological and hormonal predictors of postoperative pain was so successful, that you managed to secure research funding for a multi-site replication study. Here your collaborators collect data in the same way you did in the original study at 20 different hospital sites. The goal of the study is to increase the generalizability of your findings. You would like to assess the model coefficients and the overall predictive efficiency of the predictors in your model.
 
-As a reminder, here is the protocol for data collection: “You have collected data from adults who were scheduled to undergo surgical extraction of the third mandibular molar (wisdom tooth surgery). Patients filled out a form in the waiting room before their surgery. The form contained questions about their sex, age, and weight, and psychological questionnaires assessing anxiety, pain catastrophizing, and mindfulness (see descriptions below). You also got blood samples and saliva samples from participants in the waiting room 5 minutes before their operations to determine the serum (a component of the blood) and salivary cortisol levels of participants. Participants were contacted 5 hours after the surgery to see how much pain they were experiencing. The __level of pain__ at that moment was recorded using a numerical rating scale using a __scale of 0 to 10__, where 0 means “no pain” and 10 means “worst pain I can imagine”. 
+As a reminder, here is the protocol for data collection: “You have collected data from adults who were scheduled to undergo surgical extraction of the third mandibular molar (wisdom tooth surgery). Patients filled out a form in the waiting room before their surgery. The form contained questions about their sex, age, and weight, and psychological questionnaires assessing anxiety, pain catastrophizing, and mindfulness (see descriptions below). You also got blood samples and saliva samples from participants in the waiting room 5 minutes before their operations to determine the serum (a component of the blood) and salivary cortisol levels of participants. Participants were contacted 5 hours after the surgery to see how much pain they were experiencing. The **level of pain** at that moment was recorded using a numerical rating scale using a **scale of 0 to 10**, where 0 means “no pain” and 10 means “worst pain I can imagine”.
 
-__The State Trait Anxiety Inventory:__ T measures trait anxiety on a scale of 20 to 80, higher scores mean higher anxiety. Anxiety has been found in many studies to positively correlate with the level of pain experienced. This is __variable STAI_trait__ in the dataset. 
+**The State Trait Anxiety Inventory:** T measures trait anxiety on a scale of 20 to 80, higher scores mean higher anxiety. Anxiety has been found in many studies to positively correlate with the level of pain experienced. This is **variable STAI_trait** in the dataset.
 
-__The Pain Catastrophizing Scale__ measures the extent of pain catastrophizing, which is characterized by a tendency to magnify the threat value of a pain stimulus and to feel helpless in the presence of pain, as well as by a relative inability to prevent or inhibit pain-related thoughts in anticipation of, during, or following a painful event. The total score on this scale ranges from 0 to 52, higher scores mean higher catastrophizing. Pain catastrophizing is one of the well-established predictors of clinical pain. This is __variable pain_cat__ in the dataset.
+**The Pain Catastrophizing Scale** measures the extent of pain catastrophizing, which is characterized by a tendency to magnify the threat value of a pain stimulus and to feel helpless in the presence of pain, as well as by a relative inability to prevent or inhibit pain-related thoughts in anticipation of, during, or following a painful event. The total score on this scale ranges from 0 to 52, higher scores mean higher catastrophizing. Pain catastrophizing is one of the well-established predictors of clinical pain. This is **variable pain_cat** in the dataset.
 
-__The Mindful Attention Awareness Scale (MAAS)__ measures dispositional mindfulness, which may be described as a tendency to turn attention to present-moment experiences in an open, non-judgemental way. The MAAS total score ranges from 1 to 6 (an average of the item scores), with higher scores representing higher dispositional mindfulness. Trait mindfulness has been theorized to serve as a protective factor against pain, as the individual would be more objective about their pain experience and tend to associate less discomfort, despair, and hopelessness to the pain-related sensations. This is __variable mindfulness__ in the dataset.
+**The Mindful Attention Awareness Scale (MAAS)** measures dispositional mindfulness, which may be described as a tendency to turn attention to present-moment experiences in an open, non-judgemental way. The MAAS total score ranges from 1 to 6 (an average of the item scores), with higher scores representing higher dispositional mindfulness. Trait mindfulness has been theorized to serve as a protective factor against pain, as the individual would be more objective about their pain experience and tend to associate less discomfort, despair, and hopelessness to the pain-related sensations. This is **variable mindfulness** in the dataset.
 
-__Cortisol__ is a stress hormone associated with acute and chronic stress. Cortisol levels are thought to be positively associated with pain experience. Cortisol can be __measured from both blood and the saliva__, although, serum cortisol is often regarded in medical research as more reliably related to stress (serum is a component of the blood plasma). These are __variables cortisol_serum__, and __cortisol_saliva__ in the dataset.”
+**Cortisol** is a stress hormone associated with acute and chronic stress. Cortisol levels are thought to be positively associated with pain experience. Cortisol can be **measured from both blood and the saliva**, although, serum cortisol is often regarded in medical research as more reliably related to stress (serum is a component of the blood plasma). These are **variables cortisol_serum**, and **cortisol_saliva** in the dataset.”
 
 # Datasets
 
@@ -33,17 +33,17 @@ You will need two datasets for this assignment, datafile A and B. You can load t
 
 # Task
 
-First, fit a linear mixed model to estimate postoperative pain on datafile A. You should use the same fixed effect predictors as you used in your final model in the 3 assignment. (If you did not do that assignment, use the following predictors: age, sex, STAI, pain catastrophizing, mindfulness, and serum cortisol.) Importantly, the model has to account for the clustering of the data in different hospital sites. We have no reason to assume that the effects of the different predictors would be different in the different hospitals, so fit a random intercept model including the random intercept of hospital-ID. Once the model is built, note the model coefficients and the confidence intervals of the coefficients for all fixed effect predictors, and compare them to the ones obtained in the 3 assignment. 
+First, fit a linear mixed model to estimate postoperative pain on datafile A. You should use the same fixed effect predictors as you used in your final model in the 3 assignment. (If you did not do that assignment, use the following predictors: age, sex, STAI, pain catastrophizing, mindfulness, and serum cortisol.) Importantly, the model has to account for the clustering of the data in different hospital sites. We have no reason to assume that the effects of the different predictors would be different in the different hospitals, so fit a random intercept model including the random intercept of hospital-ID. Once the model is built, note the model coefficients and the confidence intervals of the coefficients for all fixed effect predictors, and compare them to the ones obtained in the 3 assignment.
 
 Also, compute the variance explained by the fixed effect predictors using marginal R^2^, and the variance explained by the fixed and random effect terms combined using conditional R^2^. Now use the model coefficients obtained on data file A to predict pain in datafile B.
 
-__IMPORTANT:__ Do not fit the regression models on data file B (don’t re-train your models), just use the regression equation you derived based on datafile A. These regression equations should be applied on the new data (datafile B), to predict pain.
+**IMPORTANT:** Do not fit the regression models on data file B (don’t re-train your models), just use the regression equation you derived based on datafile A. These regression equations should be applied on the new data (datafile B), to predict pain.
 
-Now compute the variance explained by the model on datafile B. You can do this by using the formula: __1 - (RSS / TSS) = R^2__. Compare this R^2^ to the marginal and conditional R^2^ values computed for the model on datafile A. 
+Now compute the variance explained by the model on datafile B. You can do this by using the formula: **1 - (RSS / TSS) = R\^2**. Compare this R^2^ to the marginal and conditional R^2^ values computed for the model on datafile A.
 
 # What to report
 
-Report the model coefficients and the confidence intervals of the coefficients for each fixed effect predictor obtained on data file A in a table. 
+Report the model coefficients and the confidence intervals of the coefficients for each fixed effect predictor obtained on data file A in a table.
 
 Report the variance components for the fixed effects, the random intercept, and the residuals (from the model on data file A). Also report the marginal R^2^ and the conditional R^2^ squared obtained from the model on data file A, and the observed R^2^ of this model for data file B.
 
@@ -70,13 +70,152 @@ b_data <- haven::read_sav("assignment_4_dataset_B.sav")
 Run an exploratory data analysis (EDA) to investigate the dataset.
 
 ```{r}
+table(a_data$STAI_trait)
+table(a_data$pain)
+table(a_data$pain_cat)
+table(a_data$mindfulness)
+table(a_data$cortisol_serum)
+table(a_data$cortisol_saliva)
 
+table(a_data$age)
+table(a_data$sex) # recode Male to male
+
+
+# Plotting the variables distribution
+
+hist(a_data$pain)
+hist(a_data$STAI_trait)
+hist(a_data$pain_cat)
+hist(a_data$mindfulness)
+hist(a_data$cortisol_serum)
+hist(a_data$cortisol_saliva)
+hist(a_data$age)
+
+boxplot(a_data$cortisol_saliva)
+
+str(a_data)
 ```
 
 ## Correct coding errors
 
 If you find values in the dataset during the EDA, that are not correct based on the provided descriptions of the variables of the dataset please correct them here.
 
+```{r}
+a_data$sex <- tolower(a_data$sex)
+```
+
+## Building the model which was used before
+
+```{r}
+model_1 <- lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness + cortisol_serum, data = a_data)
+summary(model_1)
+```
+
+## Taking into account the hospitals with random intercept
+
+```{r}
+library(lme4)
+
+model_mixed <- lmer(pain ~ age + sex + STAI_trait + pain_cat + mindfulness + cortisol_serum + (1 | hospital), data = a_data)
+summary(model_mixed)
+```
+
+## Checking for confidence intervals
+
+```{r}
+confint(model_mixed)
+```
+
+## Compare the 2 models
+
+```{r}
+# Previous model performance:
+  
+# Call:
+# lm(formula = pain ~ age + sex + STAI_trait + pain_cat + mindfulness + 
+#    cortisol_serum, data = cleaned_data)
+#
+# Residuals:
+#     Min       1Q   Median       3Q      Max 
+# -2.65134 -0.82613 -0.03108  0.74584  2.60365 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)     1.97396    1.62538   1.214 0.226518    
+# age            -0.04367    0.02262  -1.931 0.055403 .  
+# sexmale         0.37733    0.20594   1.832 0.068944 .  
+# STAI_trait      0.01414    0.02689   0.526 0.599906    
+# pain_cat        0.07257    0.02751   2.638 0.009241 ** 
+# mindfulness    -0.16106    0.12304  -1.309 0.192549    
+# cortisol_serum  0.47839    0.12566   3.807 0.000206 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 1.183 on 147 degrees of freedom
+# Multiple R-squared:  0.3642,	Adjusted R-squared:  0.3383 
+# F-statistic: 14.03 on 6 and 147 DF,  p-value: 1.367e-12
+
+
+```
+
+## New model results
+
+```{r}
+# The new model
+
+# Linear mixed model fit by REML ['lmerMod']
+# Formula: pain ~ age + sex + STAI_trait + pain_cat + mindfulness + cortisol_serum +      (1 | hospital)
+#   Data: a_data
+#
+# REML criterion at convergence: 682.6
+#
+# Scaled residuals: 
+#     Min       1Q   Median       3Q      Max 
+# -3.10080 -0.67358  0.05678  0.66353  2.78802 
+#
+# Random effects:
+# Groups   Name        Variance Std.Dev.
+# hospital (Intercept) 0.3131   0.5596  
+# Residual             1.4866   1.2193  
+# Number of obs: 200, groups:  hospital, 10
+#
+# Fixed effects:
+#                Estimate Std. Error t value
+# (Intercept)     3.502306   1.380454   2.537
+# age            -0.054400   0.019818  -2.745
+# sexmale         0.297545   0.190460   1.562
+# STAI_trait      0.001437   0.023851   0.060
+# pain_cat        0.036885   0.028633   1.288
+# mindfulness    -0.262441   0.100647  -2.608
+# cortisol_serum  0.610010   0.114260   5.339
+
+# Correlation of Fixed Effects:
+#            (Intr) age    sexmal STAI_t pan_ct mndfln
+# age         -0.626                                   
+# sexmale      0.144 -0.206                            
+# STAI_trait  -0.104 -0.321  0.214                     
+# pain_cat    -0.552  0.269 -0.358 -0.400              
+# mindfulness -0.569  0.056 -0.076  0.032  0.483       
+# cortisl_srm -0.224  0.261  0.001 -0.416 -0.078  0.003
+
+
+## CI-s
+
+#                      2.5 %      97.5 %
+# .sig01          0.29275254  0.94853399
+# .sigma          1.08880037  1.33177484
+# (Intercept)     0.84153742  6.20305781
+# age            -0.09363796 -0.01620546
+# sexmale        -0.06956659  0.67142442
+# STAI_trait     -0.04472838  0.04774798
+# pain_cat       -0.01885807  0.09219691
+# mindfulness    -0.45779593 -0.06764763
+# cortisol_serum  0.38893037  0.83190118
+
+
+```
+
+## Comparimg the models
 ```{r}
 
 ```
