@@ -323,7 +323,7 @@ corr_matrix = round(cor(mcoll_data), 2)
 
 # check for the cause of the error
 # It was the ID variable being present in the dataset
-str(m_data)
+#str(m_data)
 ```
 
 ## Model comparison
@@ -357,6 +357,7 @@ summary(model_mid_updated)
 # there is a significant difference between this 2 models
 # Compared to the simple model which includes age and sex the more complex model explains more variance (36-33%) compared to (8,4-7,2%)
 
+confint(model_updated)
 ```
 
 # Summary report
