@@ -193,7 +193,7 @@ table(b_data$sex)
 
 # Create the dummy variable expected by the model (this was done by R in the case of previous model)
 b_data$sexmale <- ifelse(b_data$sex == "male", 1, 0)
-
+names(coefs)
 # Now we use theese coefficients to calculate pain points in the other dataframe called b_data
 
 pred_B <- coefs["(Intercept)"] +
@@ -204,12 +204,21 @@ pred_B <- coefs["(Intercept)"] +
           coefs["mindfulness"] * b_data$mindfulness +
           coefs["cortisol_serum"] * b_data$cortisol_serum
 
+# We can now continue to calculate the R2 of the b_data dataset, without teaching our model in it
+# We save the actual values first
+
+y_B <- b_data$pain
+RSS <- sum((y_B - pred_B)^2)
+
+# Then we can calculate the total sum of squares by subtracting the mean from the actual data
+TSS <- sum((y_B - mean(y_B))^2)
+
+# And finally calculate the R2 of our model in the new dataset
+R2_B <- 1 - (RSS / TSS)
+R2_B
+
+# This is now 0.34 which is higher explained variance compared to our previous model without taking into account the hospitals
+
+
+
 ```
-
-
-
-
-
-
-
-
