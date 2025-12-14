@@ -126,8 +126,8 @@ all_ingredients_list <- as.list(sort(unique(cocktail_full$unique_ingredients)))
 How many different ingredients you will need?
 
 ```{r}
-length(ingredients_list)
-# The <coctail_full> dataset has <length(ingredients_list)> different type of cocktail ingredients
+length(all_ingredients_list)
+# The coctail_full dataset has 61 different type of cocktail ingredients
 ```
 
 ## 5. What are the top 10 ingredients?
@@ -153,7 +153,9 @@ cocktail_full %>%
   group_by(name) %>%
   summarize(n_ingredients = n_distinct(unique_ingredients)) %>%
   arrange(desc(n_ingredients))
+```
 
+```{r}
 # We can see, that only one has 7, the rest has 6 or less
 # Count the maximum number of ingredients and filter for it
 
@@ -179,7 +181,7 @@ rare_ingredients <- cocktail_full %>%
 rare_list <- as.list(rare_ingredients[[1]])
 length(rare_list)
 
-# In the <cocktail full> dataset we have <length(rare_list)> unique ingredients used in only one cocktail
+# In the cocktail full dataset we have 26 unique ingredients used in only one cocktail
 ```
 
 ## 8. Which cocktail has an ingredient that is only used in one cocktail?
@@ -198,7 +200,7 @@ rare_cocktail <- cocktail_full %>%
 rare_cocktail_list <- as.list(unique(rare_cocktail$name))
 length(rare_cocktail_list)
 
-# There is <length(rare_cocktail_list)> different cocktails having rare ingredient
+# There is 21 different cocktails having rare ingredient (which is used in one cocktail)
 ```
 
 ## 9. What are the cocktails without rare ingredients?
@@ -209,8 +211,8 @@ length(rare_cocktail_list)
 full_coctail_list <- as.list(unique(cocktail_full$name))
 
 rare_ingredient_free_cocktails <- setdiff(full_coctail_list, rare_cocktail_list)
-
-# The cocktails which not containing rare ingredients are the following <rare_ingredient_free_cocktails>
+print(rare_ingredient_free_cocktails)
+# The cocktails which not containing rare ingredients are the following
 ```
 
 ## 10. Create a cheat sheet for the bartender!
@@ -239,6 +241,8 @@ cheat_sheet <- cocktail_full %>%
     values_fill = list(value = "")
   ) %>%
   relocate(name, sort(names(.)))
+
+knitr::kable(cheat_sheet)
 ```
 
 Congrats, the bar is now officially open!
