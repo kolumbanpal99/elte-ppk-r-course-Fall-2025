@@ -297,12 +297,14 @@ Linearity assumption
 
 ```{r}
 plot(model_updated)
+# Linearity criteria is met
 ```
 
 Homoscedasticty assumption (homogeneity of variance)
 
 ```{r}
 plot(cleaned_data$pain)
+# Homoscedasticity assumption met
 ```
 
 Multicollinearity assumption
@@ -333,7 +335,7 @@ Create the simple model and get the results of the model that needs to be report
 ```{r}
 model_s_updated <- lm(pain ~ age + sex, data = cleaned_data)
 summary(model_s_updated)
-
+confint(model_s_updated)
 ```
 
 Create the more complex model based on the results of the model diagnostics. Also, get the results that needs to be reported based on the What to report section.
@@ -341,6 +343,7 @@ Create the more complex model based on the results of the model diagnostics. Als
 ```{r}
 model_updated <- lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness +  cortisol_serum, data = cleaned_data)
 summary(model_updated)
+confint(model_updated)
 ```
 
 Compare the two models.
@@ -350,21 +353,101 @@ anova(model_s_updated, model_updated)
 
 # We can test a middle block too, when we are not including any saliva measures, only demographic + psychological measures
 # Lets call it model_mid_updated
+# We can see that our model performance is higher while including the cortisl serum, so we can compare the simple and the complex models below
 
 model_mid_updated <- lm(pain ~ age + sex + STAI_trait + pain_cat + mindfulness, data = cleaned_data)
 summary(model_mid_updated)
-
-# there is a significant difference between this 2 models
-# Compared to the simple model which includes age and sex the more complex model explains more variance (36-33%) compared to (8,4-7,2%)
-
-confint(model_updated)
 ```
 
 # Summary report
-```{r}
-# In this study we compared different models for explaining the pain experience of patients.
-# During the test process we dropped one saliva measure because of multicollinearity (cortisol serum and saliva has r = 0.91)
 
+## Tables to report
+
+```{r}
+library(parameters)
+
+model_parameters(model_s_updated, standardized = "refit",  include_standardized = TRUE)
+model_parameters(model_updated, standardized = "refit",  include_standardized = TRUE)
 
 ```
 
+## AIC
+
+```{r}
+AIC(model_s_updated, model_updated)
+```
+
+## Comparison
+
+```{r}
+anova(model_s_updated, model_updated)
+# There is significant difference between the 2 models
+```
+
+## What to include in the table
+
+```{r}
+summary(model_updated)
+summary(model_s_updated)
+```
+
+```{r}
+jtools::summ(model_s_updated, confint = TRUE)
+```
+
+```{r}
+coef_table <- tidy(model_updated, conf.int = TRUE)
+```
+
+# Complex model table
+```{r}
+library(lm.beta)
+beta_vals <- lm.beta(model_updated)$standardized.coefficients
+
+coef_table <- coef_table %>%
+  mutate(Beta = beta_vals[term])
+
+coef_table %>%
+  select(term, estimate, conf.low, conf.high, Beta, p.value)
+
+coef(model_complex)
+```
+
+# Simple model table
+
+```{r}
+coef_simple <- tidy(model_s_updated, conf.int = TRUE)
+
+beta_vals_s <- lm.beta(model_s_updated)$standardized.coefficients
+
+coef_simple <- coef_simple %>%
+  mutate(Beta = beta_vals_s[term])
+
+coef_simple %>%
+  select(term, estimate, conf.low, conf.high, Beta, p.value)
+
+coef(model_s_updated)
+```
+
+# Model equation
+```{r}
+# The complex model predicts pain values as:
+# Pain = 1.97 − 0.0437 * Age + 0.377 * Sex_male + 0.0141 * STAI_trait + 0.0726 * Pain_cat − 0.161 * Mindfulness + 0.478 * Cortisol_serum
+```
+
+# Discussion
+```{r}
+# In this study we compared different models for explaining the pain experience of patients.
+# During the test process we dropped the cortisol_saliva measure from the more complex model, because of multicollinearity (cortisol serum and saliva had r value = 0.91)
+
+# In the simple model we included basic demographic measures such as age and sex to predict pain report by patients who were exposed to wisdom tooth surgery
+# Based on the results the model explains 7.2% of the variance (adjusted R2 = 0.072). F = 6.949, df = 151, p = 0.001. From the predictors only age was significant (p = 0.0002). As age was higher and participants thus older, it decreased the amount of pain reported (B = -0.08)
+
+# In the more complex model we included anxiety (STAI_trait), pain carastrophisation, mindfulness and cortisol measure (serum from blood).
+# In the first place 2 of the cortisol measures were present in the model, but after having not acceptable VIF value, due to multicollinearity we kept in the model the cortisol serum variable.
+# Based on the results the model explains 33.8% of the variance (adjusted R2 = 0.338). F = 14.03, df = 147, p = < 0.000. From the predictors the pain catastrophisation and the cortisol serum were significant.
+# In the complex model, pain catastrophysation predicts slighly higher pain (B = 0.073, p = 0.009) and cortisol serum predicts stronger increase (B = 0.478, p < 0.001).
+# Likelihood ratio testing confirmed that the complex model fit the data significantly better than the simpler model, F(4, 147) = 16.18, p < 0.001. AIC values also supported improved fit (simpler model AIC = 545.91, complex model AIC = 497.72).
+
+# These results indicate that psychological and biological factors contribute substantially to pain variability beyond demographic variables alone.
+```
