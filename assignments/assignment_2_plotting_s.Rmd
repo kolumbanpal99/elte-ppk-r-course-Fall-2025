@@ -73,6 +73,8 @@ firstplot <- ggplot(first_plot, aes(x = peak_name, y = n, fill = season)) +
   theme(legend.position = "bottom",
         text = element_text(size = 16),
         plot.title = element_text(size = 17))
+
+firstplot
 ```
 
 ## Saving the plot to check for differences
@@ -116,6 +118,8 @@ phd_plot <- ggplot(phd_plot_data, aes(x = year, y = total_phds, color = broad_fi
     title = "Number of awarded Ph.D.-s in the US by year"
   ) +
   theme_minimal()
+
+phd_plot
 ```
 
 ## Plot checking via printing
@@ -169,6 +173,8 @@ walkbike_plot <- ggplot(commute_plot_data, aes(x = Walk, y = Bike, color = state
   theme_light() +
     theme(text = element_text(size = 14)
   )
+
+walkbike_plot
 ```
 ## Saving to check
 
