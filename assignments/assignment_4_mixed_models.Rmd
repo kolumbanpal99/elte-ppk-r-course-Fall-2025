@@ -218,7 +218,30 @@ R2_B <- 1 - (RSS / TSS)
 R2_B
 
 # This is now 0.34 which is higher explained variance compared to our previous model without taking into account the hospitals
+```
 
+# Final summary
+```{r}
+# Our analysis compared an Ordinary Least Squares (OLS) model with a Linear Mixed-Effects (LME) model to examine predictors of self-reported pain while # accounting for clustering within hospitals. 
 
+# The OLS model included age, sex, trait anxiety, pain catastrophizing, mindfulness, and serum cortisol as predictors, while the LME model used the same fixed effects and added a random intercept for hospital.
+
+# Including hospital as a grouping factor substantially improved model performance. 
+# The simple OLS model explained 33,7 % of variance in pain scores (adjusted R2 = 0.337), whereas the LME model explained more when hospotal effects were considered (R2m = 0.316, R2c = 0.435). 
+
+# In the mixed-effects model, fixed effects accounted for 31.6% of the variance, and fixed plus hospital-level effects accounted for 43.5%. 
+# This indicates that hospital-level differences contributed meaningfully to pain outcomes. The LME model also showed good level of 
+# generalizability, as when we used it for predicting pain in an independent dataset it showed an R2 of 0.34, which can be considered a good result, 
+# knowing the fact that it was not trained on the B dataset.
+
+# Accounting for hospital clustering altered both the size and significance of several predictors compared to the simplier models. 
+# Age and mindfulness were not significant in the OLS model, as their confidence intervals included zero. In the more complex, LME model, they both became statistically significant. Older age was associated with lower pain scores, (Beta = -0.054, 95%, CI [-0.094, -0.016]), and higher mindfulness was linked to reduced pain, (Beta  = -0.262, 95%, CI [-0.458, -0.067]). 
+# These results suggest that hospital-level variation had previously masked these effects.
+
+# In the more complex model, pain catastrophizing showed the opposite behavior. 
+# It was a significant positive predictor in the OLS model, (Beta = 0.073, 95%, CI [0.018, 0.127]), but its effect was reduced and no longer significant in the LME model, (Beta = 0.037, 95%, CI [-0.019, 0.092]). This suggests that in the simple model the effect of it was largely driven by unaccounted differences between hospitals. Serum cortisol remained a strong and significant positive predictor in both models, with a larger effect in the LME model. Sex and trait anxiety were not significant predictors in either analysis.
+
+# Overall, the LME model provides a more accurate and reliable account of the data. By modeling hospital-level variability, it reduces bias in coefficient estimates and clarifies which predictors are truly associated with pain. The final model identifies age, mindfulness, and serum cortisol as robust predictors, while indicating that the apparent effect of pain catastrophizing in the OLS model was largely attributable to hospital-level heterogeneity.
 
 ```
+
